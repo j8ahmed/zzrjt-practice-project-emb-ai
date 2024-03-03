@@ -1,3 +1,4 @@
+"""Module providing a function for sentiment analysis of provided text."""
 import requests
 import json
 
@@ -6,11 +7,13 @@ def sentiment_analyzer(text_to_analyse):
     myobj = { "raw_document": { "text": text_to_analyse } }
     header = {"grpc-metadata-mm-model-id": "sentiment_aggregated-bert-workflow_lang_multi_stock"}
     response = requests.post(url, json = myobj, headers=header)
-    formatted_response = json.loads(response)
-    print(formatted_response)
-
-    label = formatted_response['documentSentiment']['label']
-    score = formatted_response['documentSentiment']['score']
+    formatted_response = json.loads(response.text)
+    if response.status_code == 200:
+        label = formatted_response['documentSentiment']['label']
+        score = formatted_response['documentSentiment']['score']
+    elif response.status_code == 500:
+        label = None
+        score = None
     return {'label': label, 'score': score}
 
-# sentiment_analyzer("I am really upset")
+# print(sentiment_analyzer("I am really upset"))
